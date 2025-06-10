@@ -16,20 +16,15 @@ import {
   TablePagination,
   CircularProgress,
   styled,
+  Button,
 } from "@mui/material"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import {apiService} from "@/lib/api"
 
 // Define app data structure
-interface AppData {
-  id: string
-  name: string
-  icon: string
-  category: string
-  connected: boolean
-}
 
 // Sample app data
-const appData: AppData[] = [
+const defaultAppData: AppData[] = [
   { id: "1", name: "Zoom", icon: "Z", category: "Video Conferencing", connected: true },
   { id: "2", name: "Slack", icon: "S", category: "IM", connected: true },
   { id: "3", name: "XSOAR", icon: "X", category: "Security Automation", connected: true },
@@ -46,6 +41,13 @@ const appData: AppData[] = [
   { id: "14", name: "App 14", icon: "", category: "Category", connected: false },
   { id: "15", name: "App 15", icon: "", category: "Category", connected: false },
 ]
+interface AppData {
+  id: string
+  name: string
+  icon: string
+  category: string
+  connected: boolean
+}
 
 // Styled components
 const StyledTableContainer = styled(TableContainer)({
@@ -89,8 +91,66 @@ const AppNameContainer = styled(Box)({
 
 export default function AppInventoryTable() {
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [rowsPerPage, setRowsPerPage] = useState(25)
   const [mounted, setMounted] = useState(false)
+    const filterParams = {
+      appName: 'appName',
+      category: 'Category',
+      pageNumber: 0,
+      pageSize: 25
+  };
+
+  const [appData, setApps] = useState<AppData[]>(defaultAppData)
+
+  // create window event listener to handle filter changes
+  useEffect(() => {
+    const handleFilterChange = (event: Event) => {
+      const customEvent = event as CustomEvent
+      const { detail } = customEvent
+      const { appName, category } = detail
+      // Update filterParams based on the event details
+      console.log("Filter change event received:", detail);
+      if (appName) {
+        filterParams.appName = appName
+      }
+      if (category) {
+        filterParams.category = category
+      }
+      // Fetch apps with updated filter parameters
+      fetchApps()
+    }
+
+    window.addEventListener("filterChange", handleFilterChange as EventListener)
+    return () => {
+      window.removeEventListener("filterChange", handleFilterChange as EventListener)
+    }
+  }, [])
+
+  const fetchApps = async () => {
+    try {
+      const response = await apiService.getApps(filterParams)
+      console.log("Fetched apps:", response.data)
+
+      const mappedApps = response.data.appRows.map((app: any) => ({
+        id: app.appId,
+        name: app.appName,
+        icon: app.appSources[0] ? app.appSources[0][0].toUpperCase() : "", // Use first source as icon
+        category: app.category,
+        connected: true, // Assuming all fetched apps are connected for now
+      }))
+
+      console.log(response.data, "Mapped apps:", mappedApps);
+
+      setApps(mappedApps || [])
+      setRowsPerPage(filterParams.pageSize || 25);
+    } catch (err) {
+      // setError("Failed to fetch users")
+      console.error("Error fetching apps:", err)
+      setApps(defaultAppData)
+    } finally {
+      // setLoading(false)
+    }
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -105,9 +165,12 @@ export default function AppInventoryTable() {
     setPage(0)
   }
 
+
   // Calculate pagination
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - appData.length) : 0
-  const visibleRows = appData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+  console.log("App data:", appData);
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - appData?.length) : 0
+  const visibleRows = appData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   if (!mounted) {
     return (
@@ -192,7 +255,7 @@ export default function AppInventoryTable() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={appData.length}
+        count={appData?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

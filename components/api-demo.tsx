@@ -38,7 +38,7 @@ interface Post {
 }
 
 export default function ApiDemo() {
-  const [users, setUsers] = useState<User[]>([])
+  const [apps, setApps] = useState<App[]>([])
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -65,11 +65,16 @@ export default function ApiDemo() {
     { field: "userId", headerName: "User ID", width: 100 },
   ]
 
-  const fetchUsers = async () => {
+  const filterParams = { appName: 'appName',
+    category: 'cate',
+    pageNumber: 1,
+    pageSize: 50};
+
+  const fetchApps = async () => {
     try {
       setLoading(true)
       setError(null)
-      const response = await apiService.getUsers()
+      const response = await apiService.getApps(filterParams)
       setUsers(response.data)
     } catch (err) {
       setError("Failed to fetch users")
@@ -79,38 +84,10 @@ export default function ApiDemo() {
     }
   }
 
-  const fetchPosts = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await apiService.getPosts()
-      setPosts(response.data.slice(0, 10)) // Limit to 10 posts for demo
-    } catch (err) {
-      setError("Failed to fetch posts")
-      console.error("Error fetching posts:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
-  const createPost = async () => {
-    try {
-      setLoading(true)
-      const response = await apiService.createPost(newPost)
-      setPosts([response.data, ...posts])
-      setOpenDialog(false)
-      setNewPost({ title: "", body: "", userId: 1 })
-    } catch (err) {
-      setError("Failed to create post")
-      console.error("Error creating post:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
-    fetchUsers()
-    fetchPosts()
+    fetchApps()
   }, [])
 
   return (

@@ -28,6 +28,11 @@ const NavItem = styled(ListItem, {
   "&:hover": {
     backgroundColor: "rgba(255, 255, 255, 0.05)",
   },
+  "::before": {
+    display: active ? "block" : "none",
+    content: `"| "`,
+    color: "#b4ff00",
+  },
 }))
 
 interface SidebarProps {
