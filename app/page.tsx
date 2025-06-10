@@ -49,7 +49,25 @@ export default function HomePage() {
   const handleNavItemClick = (item: string) => {
     setActiveNavItem(item)
   }
-
+  // Example: Add a new page for "settings"
+  if (mounted && activeNavItem === "settings") {
+    return (
+      <ClientWrapper>
+        <AppContainer>
+          <Sidebar activeItem={activeNavItem} onItemClick={handleNavItemClick} />
+          <ContentContainer>
+            <MainContent>
+              <TableContainer>
+                <PageTitle variant="h1">Settings</PageTitle>
+                <Box sx={{ color: "#fff" }}>Settings page content goes here.</Box>
+              </TableContainer>
+              <Box sx={{ width: 250, backgroundColor: "#1a1a1a" }} />
+            </MainContent>
+          </ContentContainer>
+        </AppContainer>
+      </ClientWrapper>
+    )
+  }
   if (!mounted) {
     return (
       <AppContainer>
@@ -78,7 +96,6 @@ export default function HomePage() {
               <PageTitle variant="h1">App Inventory</PageTitle>
               <AppInventoryTable />
             </TableContainer>
-
             <FiltersPanel />
           </MainContent>
         </ContentContainer>

@@ -23,24 +23,7 @@ import {apiService} from "@/lib/api"
 
 // Define app data structure
 
-// Sample app data
-const defaultAppData: AppData[] = [
-  { id: "1", name: "Zoom", icon: "Z", category: "Video Conferencing", connected: true },
-  { id: "2", name: "Slack", icon: "S", category: "IM", connected: true },
-  { id: "3", name: "XSOAR", icon: "X", category: "Security Automation", connected: true },
-  { id: "4", name: "Torq", icon: "T", category: "Security Automation", connected: true },
-  { id: "5", name: "Virtu", icon: "V", category: "Financial", connected: true },
-  { id: "6", name: "Tines", icon: "T", category: "Automation", connected: true },
-  { id: "7", name: "Splunk", icon: "S", category: "Monitoring", connected: true },
-  { id: "8", name: "Sharepoint", icon: "S", category: "Drive", connected: true },
-  { id: "9", name: "App 9", icon: "", category: "Category", connected: true },
-  { id: "10", name: "App 10", icon: "", category: "Category", connected: true },
-  { id: "11", name: "App 11", icon: "", category: "Category", connected: true },
-  { id: "12", name: "App 12", icon: "", category: "Category", connected: true },
-  { id: "13", name: "App 13", icon: "", category: "Category", connected: false },
-  { id: "14", name: "App 14", icon: "", category: "Category", connected: false },
-  { id: "15", name: "App 15", icon: "", category: "Category", connected: false },
-]
+
 interface AppData {
   id: string
   name: string
@@ -88,6 +71,8 @@ const AppNameContainer = styled(Box)({
   display: "flex",
   alignItems: "center",
 })
+
+const defaultAppData: AppData[] = [ ];
 
 export default function AppInventoryTable() {
   const [page, setPage] = useState(0)
@@ -253,7 +238,7 @@ export default function AppInventoryTable() {
         </Table>
       </StyledTableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[25, 50]}
         component="div"
         count={appData?.length}
         rowsPerPage={rowsPerPage}
