@@ -94,8 +94,8 @@ export default function AppInventoryTable() {
   const [rowsPerPage, setRowsPerPage] = useState(25)
   const [mounted, setMounted] = useState(false)
     const filterParams = {
-      appName: 'appName',
-      category: 'Category',
+      appName: '',
+      category: '',
       pageNumber: 0,
       pageSize: 25
   };
@@ -107,18 +107,16 @@ export default function AppInventoryTable() {
     const handleFilterChange = (event: Event) => {
       const customEvent = event as CustomEvent
       const { detail } = customEvent
-      const { appName, category } = detail
+      const { appName = '', category = '' } = detail
       // Update filterParams based on the event details
-      console.log("Filter change event received:", detail);
-      if (appName) {
         filterParams.appName = appName
-      }
-      if (category) {
         filterParams.category = category
-      }
+
       // Fetch apps with updated filter parameters
       fetchApps()
     }
+
+    fetchApps();
 
     window.addEventListener("filterChange", handleFilterChange as EventListener)
     return () => {
@@ -171,6 +169,8 @@ export default function AppInventoryTable() {
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - appData?.length) : 0
   const visibleRows = appData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+
 
   if (!mounted) {
     return (
